@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Next.js build output
+.next/
+
+# Environment variables
+.env
+
+# MacOS / Windows system files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Clerk or local dev auth
+.clerk/
+
+# Ignore editor settings
+.vscode/
+.idea/
+
+credentials.json
+token.json
