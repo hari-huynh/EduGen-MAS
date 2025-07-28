@@ -85,6 +85,7 @@ class ImageData(BaseModel):
     width: int
     height: int
 
+
 @dataclass
 class Content:
     title: str
@@ -106,6 +107,7 @@ class Slide(BaseModel):
     layout: Literal["TITLE", "SECTION_HEADER", "TITLE_CONTENT", "CONTENT_IMAGE", "END"]
     image_urls: Optional[List[str]]
     page: int
+    
 
 class Presentation(BaseModel):
     title: str

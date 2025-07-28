@@ -1,3 +1,6 @@
+langchain-chroma
+langchain-huggingface
 psycopg2
+pymongo
 python-dotenv
 SQLAlchemy
