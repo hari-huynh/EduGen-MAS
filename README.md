@@ -54,27 +54,7 @@ npm install
 yarn install
 ```
 
-3. **Configure environment**
-```bash
-cp .env.example .env
-# Edit the necessary environment variables
-```
-
-4. **Initialize database**
-```bash
-# Setup PostgreSQL database
-python scripts/init_db.py
-
-# Create admin user (optional)
-python scripts/create_admin.py
-```
-
 ### Running the Application
-
-**Using Docker (Recommended):**
-```bash
-docker-compose up -d
-```
 
 **Direct execution:**
 ```bash
@@ -97,23 +77,9 @@ The application will be available at:
 ## 🔧 Configuration
 
 ### LLM Models
-The system supports multiple LLM providers:
-- OpenAI GPT-4/GPT-3.5
-- Anthropic Claude
+The system supports multiple LLM provider:
 - Google Gemini
-- Local models (Ollama, vLLM)
 
-### RAG Configuration
-```python
-# config/rag_config.py
-RAG_CONFIG = {
-    "chunk_size": 1000,
-    "chunk_overlap": 200,
-    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
-    "vector_db": "chromadb",
-    "retrieval_k": 5
-}
-```
 
 ## 🤖 Agents
 
@@ -160,89 +126,6 @@ Login → Upload Documents → Select Content Type → Configure Options → Gen
 - **History Management**: Access previously generated materials
 - **Export Options**: Multiple formats (PDF, DOCX, PPTX, Markdown)
 
-## 📚 API Usage Guide
-
-### Authentication
-All API requests require authentication using JWT tokens:
-
-```javascript
-// Login and get token
-const response = await fetch('/api/auth/login', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email, password })
-});
-const { access_token } = await response.json();
-
-// Use token in requests
-const headers = {
-  'Authorization': `Bearer ${access_token}`,
-  'Content-Type': 'application/json'
-};
-```
-### 1. Upload Documents via API
-```javascript
-const formData = new FormData();
-formData.append('file', fileInput.files[0]);
-
-const response = await fetch('/api/documents/upload', {
-  method: 'POST',
-  headers: { 'Authorization': `Bearer ${access_token}` },
-  body: formData
-});
-
-const { document_id, status } = await response.json();
-```
-
-### 2. Generate Lecture Notes via API
-```javascript
-const response = await fetch('/api/generate/lecture-notes', {
-  method: 'POST',
-  headers,
-  body: JSON.stringify({
-    topic: "Machine Learning Basics",
-    learning_objectives: ["Understand ML concepts", "Learn algorithms"],
-    document_ids: ["doc_123", "doc_456"],
-    format: "markdown",
-    length: "detailed"
-  })
-});
-
-const { task_id } = await response.json();
-
-// Poll for completion
-const result = await fetch(`/api/tasks/${task_id}`, { headers });
-```
-
-### 3. Generate Quiz via API
-```javascript
-const response = await fetch('/api/generate/quiz', {
-  method: 'POST',
-  headers,
-  body: JSON.stringify({
-    topic: "Linear Regression",
-    num_questions: 10,
-    difficulty: "intermediate",
-    question_types: ["multiple_choice"],
-    document_ids: ["doc_123"]
-  })
-});
-
-const { quiz_data, task_id } = await response.json();
-```
-
-## 🧪 Testing
-
-```bash
-# Run unit tests
-pytest tests/
-
-# Run integration tests
-pytest tests/integration/
-
-# Run with coverage
-pytest --cov=src tests/
-```
 
 ## 📊 Sample Outputs
 
@@ -278,17 +161,6 @@ Machine learning is a subset of artificial intelligence that enables computers t
 }
 ```
 
-## 🤝 Contributing
-
-We welcome all contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-### Contribution Process
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Create a Pull Request
-
 ## 📝 FastAPI Endpoints
 
 ### Authentication Endpoints
@@ -297,7 +169,6 @@ POST /api/auth/register
 POST /api/auth/login
 POST /api/auth/logout
 POST /api/auth/refresh
-GET  /api/auth/me
 ```
 
 ### Document Management
@@ -308,52 +179,6 @@ GET  /api/documents/{document_id}
 DELETE /api/documents/{document_id}
 ```
 
-### Content Generation Endpoints
-
-#### Generate Lecture Notes
-```http
-POST /api/generate/lecture-notes
-Authorization: Bearer {access_token}
-Content-Type: application/json
-
-{
-  "topic": "Machine Learning Basics",
-  "learning_objectives": ["Understand ML concepts"],
-  "document_ids": ["doc1", "doc2"],
-  "format": "markdown",
-  "length": "detailed"
-}
-```
-
-#### Generate Slides
-```http
-POST /api/generate/slides
-Authorization: Bearer {access_token}
-Content-Type: application/json
-
-{
-  "content": "lecture content",
-  "style": "academic",
-  "num_slides": 15,
-  "template": "modern"
-}
-```
-
-#### Generate Quiz
-```http
-POST /api/generate/quiz
-Authorization: Bearer {access_token}
-Content-Type: application/json
-
-{
-  "topic": "Linear Regression",
-  "num_questions": 10,
-  "difficulty": "intermediate",
-  "question_types": ["multiple_choice"],
-  "document_ids": ["doc1"]
-}
-```
-
 ### Task Management
 ```http
 GET  /api/tasks/{task_id}        # Get task status
@@ -361,39 +186,12 @@ GET  /api/tasks/                 # List user tasks
 POST /api/tasks/{task_id}/cancel # Cancel running task
 ```
 
-## 🔍 Advanced Features
-
-### Custom Agent Development
-```python
-from agents.base import BaseAgent
-
-class CustomAgent(BaseAgent):
-    def __init__(self, config):
-        super().__init__(config)
-        self.agent_type = "custom"
-    
-    def process(self, input_data):
-        # Your custom logic here
-        return processed_result
-```
-
-### RAG Customization
-```python
-# Custom retrieval strategy
-from rag.retrievers import BaseRetriever
-
-class CustomRetriever(BaseRetriever):
-    def retrieve(self, query, k=5):
-        # Custom retrieval logic
-        return relevant_documents
-```
-
 ## 📊 Performance Metrics
 
-- **Response Time**: < 30 seconds for lecture notes
-- **Accuracy**: 95%+ content relevance with RAG
-- **Throughput**: 100+ concurrent requests
-- **Storage**: Scalable vector database
+- **Response Time**: 
+- **Accuracy**: 
+- **Throughput**: 
+- **Storage**: 
 
 ## 🛠️ Development
 
@@ -436,106 +234,11 @@ multi-agent-llm-education/
 └── scripts/                   # Setup scripts
 ```
 
-### Code Style
-- Follow PEP 8 for Python
-- Use ESLint for JavaScript
-- 80% test coverage minimum
-- Type hints required
-
-## 🚀 Deployment
-
-### Docker Deployment
-```yaml
-# docker-compose.yml
-version: '3.8'
-services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000
-    depends_on:
-      - backend
-
-  backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://user:pass@postgres:5432/db
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=your-secret-key
-    depends_on:
-      - postgres
-      - redis
-
-  postgres:
-    image: postgres:13
-    environment:
-      - POSTGRES_DB=multi_agent_db
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - frontend
-      - backend
-
-volumes:
-  postgres_data:
-```
-
-### Cloud Deployment
-- **AWS**: ECS, Lambda, S3
-- **GCP**: Cloud Run, Cloud Functions
-- **Azure**: Container Instances, Functions
-
-## 📄 License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
-
-## 🔗 Useful Links
-
-- [Documentation](https://your-docs-site.com)
-- [API Reference](https://your-api-docs.com)
-- [Examples](./examples/)
-- [Troubleshooting](./docs/troubleshooting.md)
-- [Changelog](./CHANGELOG.md)
-
-## 👥 Authors
-
-- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
-
-See also the list of [contributors](https://github.com/yourusername/multi-agent-llm-education/contributors) who participated in this project.
-
-## 🙏 Acknowledgments
-
-- Thanks to the open source community
-- Libraries and frameworks used in this project
-- Contributors and beta testers
-- Educational institutions providing feedback
-
 ## 📞 Support
 
 If you encounter any issues or have questions:
 - Create an [Issue](https://github.com/yourusername/multi-agent-llm-education/issues)
 - Email: your.email@example.com
-- Discord: [Server Link](https://discord.gg/yourserver)
-- Stack Overflow: Tag with `multi-agent-llm`
 
 ## 🔮 Roadmap
 
